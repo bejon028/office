@@ -15,18 +15,18 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
 
     private final String defaultTargetUrl;
 
-    public CustomSuccessHandler(String defaultTargetUrl){
+    public CustomSuccessHandler(String defaultTargetUrl) {
         this.defaultTargetUrl = defaultTargetUrl;
     }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
-        if(request.getAttribute("token")!=null){
+        if (request.getAttribute("token") != null) {
             System.out.println("inside custom authenticationSuccess");
-            response.setHeader("token",(String)request.getAttribute("token"));
+            response.setHeader("token", (String) request.getAttribute("token"));
             System.out.println(response.toString());
         }
-        response.sendRedirect(request.getContextPath()+defaultTargetUrl);
+        response.sendRedirect(request.getContextPath() + defaultTargetUrl);
     }
 }

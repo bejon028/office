@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -20,15 +21,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .addFilterBefore(new CustomFilter(), UsernamePasswordAuthenticationFilter.class)
             .authorizeRequests()
                 .antMatchers("/", "/home").permitAll()
                 .anyRequest().authenticated()
                 .and()
             .formLogin()
                 .loginPage("/login")
+                .defaultSuccessUrl("/hello")
+                .failureUrl("/login?error")
                 .permitAll()
-                .successHandler(getCustomerSuccessHandler())
                 .and()
             .logout()
                 .permitAll();
@@ -36,9 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-            .inMemoryAuthentication()
-                .withUser("user").password("password").roles("USER");
+        auth.authenticationProvider(getAuthenticationProvider());
     }
 
 
@@ -52,11 +51,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             return null;
         }
     }
+    @Bean
+    public AuthenticationProvider getAuthenticationProvider(){
+        AuthenticationProvider authenticationProvider = new CustomAuthenticationProvider();
+        return authenticationProvider;
+    }
 
     @Autowired
     public CustomFilter getFilter(){
         return new CustomFilter();
     }
+
     @Autowired
     public CustomSuccessHandler getCustomerSuccessHandler(){
         CustomSuccessHandler customSuccessHandler = new CustomSuccessHandler("/");
