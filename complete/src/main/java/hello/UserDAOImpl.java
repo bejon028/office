@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Repository
 public class UserDAOImpl {
 	
 	 public CustomUser loadUserByUsername(final String username) {
